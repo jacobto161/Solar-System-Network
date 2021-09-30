@@ -9,8 +9,8 @@ import collections
 
 
 def main():
-    node_df = pd.read_csv('nodes.csv')
-    edge_df = pd.read_csv('edges.csv')
+    node_df = pd.read_csv('data/nodes.csv')
+    edge_df = pd.read_csv('data/edges.csv')
     graph = nx.from_pandas_edgelist(edge_df, 'Source', 'Target')
 
     net = Network(height='100%', width='100%', notebook=True, bgcolor='#000000', font_color='#ffffff')
@@ -22,7 +22,7 @@ def main():
         node['shape'] = 'circularImage'
         node['image'] = 'imgs/' + str(node['id']).lower() + '.jpg'
     net.show_buttons(True)
-    net.show('example.html')
+    net.show('output.html')
     plot_degree(graph)
     eigen = nx.eigenvector_centrality_numpy(graph)
     print('eigenvalue', eigen)
