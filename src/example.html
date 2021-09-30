@@ -1,0 +1,217 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+        #loadingBar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width: 100%;
+            height: 100%;
+            background-color:rgba(200,200,200,0.8);
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -ms-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+            opacity:1;
+        }
+
+        #bar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width:20px;
+            height:20px;
+            margin:auto auto auto auto;
+            border-radius:11px;
+            border:2px solid rgba(30,30,30,0.05);
+            background: rgb(0, 173, 246); /* Old browsers */
+            box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+        }
+
+        #border {
+            position:absolute;
+            top:10px;
+            left:10px;
+            width:500px;
+            height:23px;
+            margin:auto auto auto auto;
+            box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+            border-radius:10px;
+        }
+
+        #text {
+            position:absolute;
+            top:8px;
+            left:530px;
+            width:30px;
+            height:50px;
+            margin:auto auto auto auto;
+            font-size:22px;
+            color: #000000;
+        }
+
+        div.outerBorder {
+            position:relative;
+            top:400px;
+            width:600px;
+            height:44px;
+            margin:auto auto auto auto;
+            border:8px solid rgba(0,0,0,0.1);
+            background: rgb(252,252,252); /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+            border-radius:72px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+        
+
+        
+        #config {
+            float: left;
+            width: 400px;
+            height: 600px;
+        }
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+<div id="loadingBar">
+    <div class="outerBorder">
+        <div id="text">0%</div>
+        <div id="border">
+            <div id="bar"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id = "config"></div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"color": "#F78336", "font": {"color": "#ffffff"}, "id": "Sun", "image": "imgs/sun.jpg", "label": "Sun", "mass": 5, "shape": "circularImage", "size": 100}, {"color": "#A0A1A0", "font": {"color": "#ffffff"}, "id": "Mercury", "image": "imgs/mercury.jpg", "label": "Mercury", "mass": 3, "shape": "circularImage", "size": 50}, {"color": "#D4B05F", "font": {"color": "#ffffff"}, "id": "Venus", "image": "imgs/venus.jpg", "label": "Venus", "mass": 3, "shape": "circularImage", "size": 50}, {"color": "#7A8961", "font": {"color": "#ffffff"}, "id": "Earth", "image": "imgs/earth.jpg", "label": "Earth", "mass": 3, "shape": "circularImage", "size": 50}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Mars", "image": "imgs/mars.jpg", "label": "Mars", "mass": 3, "shape": "circularImage", "size": 50}, {"color": "#B2742F", "font": {"color": "#ffffff"}, "id": "Jupiter", "image": "imgs/jupiter.jpg", "label": "Jupiter", "mass": 3, "shape": "circularImage", "size": 50}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Saturn", "image": "imgs/saturn.jpg", "label": "Saturn", "mass": 3, "shape": "circularImage", "size": 50}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Uranus", "image": "imgs/uranus.jpg", "label": "Uranus", "mass": 3, "shape": "circularImage", "size": 50}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Neptune", "image": "imgs/neptune.jpg", "label": "Neptune", "mass": 3, "shape": "circularImage", "size": 50}, {"color": "#8b867e", "font": {"color": "#ffffff"}, "id": "Ceres", "image": "imgs/ceres.jpg", "label": "Ceres", "mass": 2, "shape": "circularImage", "size": 30}, {"color": "#c8bbad", "font": {"color": "#ffffff"}, "id": "Pluto", "image": "imgs/pluto.jpg", "label": "Pluto", "mass": 2, "shape": "circularImage", "size": 30}, {"color": "#635c59", "font": {"color": "#ffffff"}, "id": "Eris", "image": "imgs/eris.jpg", "label": "Eris", "mass": 2, "shape": "circularImage", "size": 30}, {"color": "#a6a19f", "font": {"color": "#ffffff"}, "id": "Haumea", "image": "imgs/haumea.jpg", "label": "Haumea", "mass": 2, "shape": "circularImage", "size": 30}, {"color": "#b48066", "font": {"color": "#ffffff"}, "id": "Makemake", "image": "imgs/makemake.jpg", "label": "Makemake", "mass": 2, "shape": "circularImage", "size": 30}, {"color": "#7A8961", "font": {"color": "#ffffff"}, "id": "Moon", "label": "Moon", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Deimos", "label": "Deimos", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Phobos", "label": "Phobos", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Adrastea", "label": "Adrastea", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Aitne", "label": "Aitne", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Amalthea", "label": "Amalthea", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Ananke", "label": "Ananke", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Aoede", "label": "Aoede", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Arche", "label": "Arche", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Autonoe", "label": "Autonoe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Callirrhoe", "label": "Callirrhoe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Callisto", "label": "Callisto", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Carme", "label": "Carme", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Carpo", "label": "Carpo", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Chaldene", "label": "Chaldene", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Cyllene", "label": "Cyllene", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Dia", "label": "Dia", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Eirene", "label": "Eirene", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Elara", "label": "Elara", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Erinome", "label": "Erinome", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Ersa", "label": "Ersa", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Euanthe", "label": "Euanthe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Eukelade", "label": "Eukelade", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Eupheme", "label": "Eupheme", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Euporie", "label": "Euporie", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Europa", "label": "Europa", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Eurydome", "label": "Eurydome", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Ganymede", "label": "Ganymede", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Harpalyke", "label": "Harpalyke", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Hegemone", "label": "Hegemone", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Helike", "label": "Helike", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Hermippe", "label": "Hermippe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Herse", "label": "Herse", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Himalia", "label": "Himalia", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Io", "label": "Io", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Iocaste", "label": "Iocaste", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Isonoe", "label": "Isonoe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Jupiter LI", "label": "Jupiter LI", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Jupiter LII", "label": "Jupiter LII", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Kale", "label": "Kale", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Kallichore", "label": "Kallichore", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Kalyke", "label": "Kalyke", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Kore", "label": "Kore", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Leda", "label": "Leda", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Lysithea", "label": "Lysithea", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Megaclite", "label": "Megaclite", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Metis", "label": "Metis", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Mneme", "label": "Mneme", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Orthosie", "label": "Orthosie", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Pandia", "label": "Pandia", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Pasiphae", "label": "Pasiphae", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Pasithee", "label": "Pasithee", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Philophrosyne", "label": "Philophrosyne", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Praxidike", "label": "Praxidike", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Sinope", "label": "Sinope", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Sponde", "label": "Sponde", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Taygete", "label": "Taygete", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Thebe", "label": "Thebe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Thelxinoe", "label": "Thelxinoe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Themisto", "label": "Themisto", "mass": 1, "shape": "dot", "size": 10}, {"color": "#EE7D58", "font": {"color": "#ffffff"}, "id": "Thyone", "label": "Thyone", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Aegaeon", "label": "Aegaeon", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Aegir", "label": "Aegir", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Alborix", "label": "Alborix", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Anthe", "label": "Anthe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Atlas", "label": "Atlas", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Bebhionn", "label": "Bebhionn", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Bergelmire", "label": "Bergelmire", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Bestla", "label": "Bestla", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Calypso", "label": "Calypso", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Daphnis", "label": "Daphnis", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Dione", "label": "Dione", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Enceladus", "label": "Enceladus", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Epimetheus", "label": "Epimetheus", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Erriapus", "label": "Erriapus", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Farbauti", "label": "Farbauti", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Fenrir", "label": "Fenrir", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Fornjot", "label": "Fornjot", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Greip", "label": "Greip", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Hati", "label": "Hati", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Helene", "label": "Helene", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Hyperion", "label": "Hyperion", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Hyrrokkin", "label": "Hyrrokkin", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Iapetus", "label": "Iapetus", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Ijiraq", "label": "Ijiraq", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Janus", "label": "Janus", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Jarnsaxa", "label": "Jarnsaxa", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Kari", "label": "Kari", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Kiviuq", "label": "Kiviuq", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Loge", "label": "Loge", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Methone", "label": "Methone", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Mimas", "label": "Mimas", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Mundilfari", "label": "Mundilfari", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Narvi", "label": "Narvi", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Paaliaq", "label": "Paaliaq", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Pallene", "label": "Pallene", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Pan", "label": "Pan", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Pandora", "label": "Pandora", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Phoebe", "label": "Phoebe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Polydeuces", "label": "Polydeuces", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Prometheus", "label": "Prometheus", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Rhea", "label": "Rhea", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Siarnaq", "label": "Siarnaq", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Skathi", "label": "Skathi", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Skoll", "label": "Skoll", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Surtur", "label": "Surtur", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Suttungr", "label": "Suttungr", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Tarqeq", "label": "Tarqeq", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Tarvos", "label": "Tarvos", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Telesto", "label": "Telesto", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Tethys", "label": "Tethys", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Thrymr", "label": "Thrymr", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Titan", "label": "Titan", "mass": 1, "shape": "dot", "size": 10}, {"color": "#F0D288", "font": {"color": "#ffffff"}, "id": "Ymir", "label": "Ymir", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Ariel", "label": "Ariel", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Belinda", "label": "Belinda", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Bianca", "label": "Bianca", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Caliban", "label": "Caliban", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Cordelia", "label": "Cordelia", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Cressida", "label": "Cressida", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Cupid", "label": "Cupid", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Desdemona", "label": "Desdemona", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Ferdinand", "label": "Ferdinand", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Francisco", "label": "Francisco", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Juliet", "label": "Juliet", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Mab", "label": "Mab", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Margaret", "label": "Margaret", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Miranda", "label": "Miranda", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Oberon", "label": "Oberon", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Ophelia", "label": "Ophelia", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Perdita", "label": "Perdita", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Portia", "label": "Portia", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Prospero", "label": "Prospero", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Puck", "label": "Puck", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Rosalind", "label": "Rosalind", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Setebos", "label": "Setebos", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Stephano", "label": "Stephano", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Sycorax", "label": "Sycorax", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Titania", "label": "Titania", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Trinculo", "label": "Trinculo", "mass": 1, "shape": "dot", "size": 10}, {"color": "#BAE1E2", "font": {"color": "#ffffff"}, "id": "Umbriel", "label": "Umbriel", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Despina", "label": "Despina", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Galatea", "label": "Galatea", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Halimede", "label": "Halimede", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Hippocamp", "label": "Hippocamp", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Laomedeia", "label": "Laomedeia", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Larissa", "label": "Larissa", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Naiad", "label": "Naiad", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Nereid", "label": "Nereid", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Neso", "label": "Neso", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Proteus", "label": "Proteus", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Psamathe", "label": "Psamathe", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Sao", "label": "Sao", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Thalassa", "label": "Thalassa", "mass": 1, "shape": "dot", "size": 10}, {"color": "#4575FC", "font": {"color": "#ffffff"}, "id": "Triton", "label": "Triton", "mass": 1, "shape": "dot", "size": 10}, {"color": "#c8bbad", "font": {"color": "#ffffff"}, "id": "Charon", "label": "Charon", "mass": 1, "shape": "dot", "size": 10}, {"color": "#c8bbad", "font": {"color": "#ffffff"}, "id": "Hydra", "label": "Hydra", "mass": 1, "shape": "dot", "size": 10}, {"color": "#c8bbad", "font": {"color": "#ffffff"}, "id": "Kerberos", "label": "Kerberos", "mass": 1, "shape": "dot", "size": 10}, {"color": "#c8bbad", "font": {"color": "#ffffff"}, "id": "Nix", "label": "Nix", "mass": 1, "shape": "dot", "size": 10}, {"color": "#c8bbad", "font": {"color": "#ffffff"}, "id": "Styx", "label": "Styx", "mass": 1, "shape": "dot", "size": 10}, {"color": "#635c59", "font": {"color": "#ffffff"}, "id": "Dysnomia", "label": "Dysnomia", "mass": 1, "shape": "dot", "size": 10}, {"color": "#a6a19f", "font": {"color": "#ffffff"}, "id": "Namaka", "label": "Namaka", "mass": 1, "shape": "dot", "size": 10}, {"color": "#a6a19f", "font": {"color": "#ffffff"}, "id": "Hi\u0027iaka", "label": "Hi\u0027iaka", "mass": 1, "shape": "dot", "size": 10}]);
+        edges = new vis.DataSet([{"from": "Sun", "to": "Mercury"}, {"from": "Sun", "to": "Venus"}, {"from": "Sun", "to": "Earth"}, {"from": "Sun", "to": "Mars"}, {"from": "Sun", "to": "Jupiter"}, {"from": "Sun", "to": "Saturn"}, {"from": "Sun", "to": "Uranus"}, {"from": "Sun", "to": "Neptune"}, {"from": "Sun", "to": "Ceres"}, {"from": "Sun", "to": "Pluto"}, {"from": "Sun", "to": "Eris"}, {"from": "Sun", "to": "Haumea"}, {"from": "Sun", "to": "Makemake"}, {"from": "Earth", "to": "Moon"}, {"from": "Mars", "to": "Deimos"}, {"from": "Mars", "to": "Phobos"}, {"from": "Jupiter", "to": "Adrastea"}, {"from": "Jupiter", "to": "Aitne"}, {"from": "Jupiter", "to": "Amalthea"}, {"from": "Jupiter", "to": "Ananke"}, {"from": "Jupiter", "to": "Aoede"}, {"from": "Jupiter", "to": "Arche"}, {"from": "Jupiter", "to": "Autonoe"}, {"from": "Jupiter", "to": "Callirrhoe"}, {"from": "Jupiter", "to": "Callisto"}, {"from": "Jupiter", "to": "Carme"}, {"from": "Jupiter", "to": "Carpo"}, {"from": "Jupiter", "to": "Chaldene"}, {"from": "Jupiter", "to": "Cyllene"}, {"from": "Jupiter", "to": "Dia"}, {"from": "Jupiter", "to": "Eirene"}, {"from": "Jupiter", "to": "Elara"}, {"from": "Jupiter", "to": "Erinome"}, {"from": "Jupiter", "to": "Ersa"}, {"from": "Jupiter", "to": "Euanthe"}, {"from": "Jupiter", "to": "Eukelade"}, {"from": "Jupiter", "to": "Eupheme"}, {"from": "Jupiter", "to": "Euporie"}, {"from": "Jupiter", "to": "Europa"}, {"from": "Jupiter", "to": "Eurydome"}, {"from": "Jupiter", "to": "Ganymede"}, {"from": "Jupiter", "to": "Harpalyke"}, {"from": "Jupiter", "to": "Hegemone"}, {"from": "Jupiter", "to": "Helike"}, {"from": "Jupiter", "to": "Hermippe"}, {"from": "Jupiter", "to": "Herse"}, {"from": "Jupiter", "to": "Himalia"}, {"from": "Jupiter", "to": "Io"}, {"from": "Jupiter", "to": "Iocaste"}, {"from": "Jupiter", "to": "Isonoe"}, {"from": "Jupiter", "to": "Jupiter LI"}, {"from": "Jupiter", "to": "Jupiter LII"}, {"from": "Jupiter", "to": "Kale"}, {"from": "Jupiter", "to": "Kallichore"}, {"from": "Jupiter", "to": "Kalyke"}, {"from": "Jupiter", "to": "Kore"}, {"from": "Jupiter", "to": "Leda"}, {"from": "Jupiter", "to": "Lysithea"}, {"from": "Jupiter", "to": "Megaclite"}, {"from": "Jupiter", "to": "Metis"}, {"from": "Jupiter", "to": "Mneme"}, {"from": "Jupiter", "to": "Orthosie"}, {"from": "Jupiter", "to": "Pandia"}, {"from": "Jupiter", "to": "Pasiphae"}, {"from": "Jupiter", "to": "Pasithee"}, {"from": "Jupiter", "to": "Philophrosyne"}, {"from": "Jupiter", "to": "Praxidike"}, {"from": "Jupiter", "to": "Sinope"}, {"from": "Jupiter", "to": "Sponde"}, {"from": "Jupiter", "to": "Taygete"}, {"from": "Jupiter", "to": "Thebe"}, {"from": "Jupiter", "to": "Thelxinoe"}, {"from": "Jupiter", "to": "Themisto"}, {"from": "Jupiter", "to": "Thyone"}, {"from": "Saturn", "to": "Aegaeon"}, {"from": "Saturn", "to": "Aegir"}, {"from": "Saturn", "to": "Alborix"}, {"from": "Saturn", "to": "Anthe"}, {"from": "Saturn", "to": "Atlas"}, {"from": "Saturn", "to": "Bebhionn"}, {"from": "Saturn", "to": "Bergelmire"}, {"from": "Saturn", "to": "Bestla"}, {"from": "Saturn", "to": "Calypso"}, {"from": "Saturn", "to": "Daphnis"}, {"from": "Saturn", "to": "Dione"}, {"from": "Saturn", "to": "Enceladus"}, {"from": "Saturn", "to": "Epimetheus"}, {"from": "Saturn", "to": "Erriapus"}, {"from": "Saturn", "to": "Farbauti"}, {"from": "Saturn", "to": "Fenrir"}, {"from": "Saturn", "to": "Fornjot"}, {"from": "Saturn", "to": "Greip"}, {"from": "Saturn", "to": "Hati"}, {"from": "Saturn", "to": "Helene"}, {"from": "Saturn", "to": "Hyperion"}, {"from": "Saturn", "to": "Hyrrokkin"}, {"from": "Saturn", "to": "Iapetus"}, {"from": "Saturn", "to": "Ijiraq"}, {"from": "Saturn", "to": "Janus"}, {"from": "Saturn", "to": "Jarnsaxa"}, {"from": "Saturn", "to": "Kari"}, {"from": "Saturn", "to": "Kiviuq"}, {"from": "Saturn", "to": "Loge"}, {"from": "Saturn", "to": "Methone"}, {"from": "Saturn", "to": "Mimas"}, {"from": "Saturn", "to": "Mundilfari"}, {"from": "Saturn", "to": "Narvi"}, {"from": "Saturn", "to": "Paaliaq"}, {"from": "Saturn", "to": "Pallene"}, {"from": "Saturn", "to": "Pan"}, {"from": "Saturn", "to": "Pandora"}, {"from": "Saturn", "to": "Phoebe"}, {"from": "Saturn", "to": "Polydeuces"}, {"from": "Saturn", "to": "Prometheus"}, {"from": "Saturn", "to": "Rhea"}, {"from": "Saturn", "to": "Siarnaq"}, {"from": "Saturn", "to": "Skathi"}, {"from": "Saturn", "to": "Skoll"}, {"from": "Saturn", "to": "Surtur"}, {"from": "Saturn", "to": "Suttungr"}, {"from": "Saturn", "to": "Tarqeq"}, {"from": "Saturn", "to": "Tarvos"}, {"from": "Saturn", "to": "Telesto"}, {"from": "Saturn", "to": "Tethys"}, {"from": "Saturn", "to": "Thrymr"}, {"from": "Saturn", "to": "Titan"}, {"from": "Saturn", "to": "Ymir"}, {"from": "Uranus", "to": "Ariel"}, {"from": "Uranus", "to": "Belinda"}, {"from": "Uranus", "to": "Bianca"}, {"from": "Uranus", "to": "Caliban"}, {"from": "Uranus", "to": "Cordelia"}, {"from": "Uranus", "to": "Cressida"}, {"from": "Uranus", "to": "Cupid"}, {"from": "Uranus", "to": "Desdemona"}, {"from": "Uranus", "to": "Ferdinand"}, {"from": "Uranus", "to": "Francisco"}, {"from": "Uranus", "to": "Juliet"}, {"from": "Uranus", "to": "Mab"}, {"from": "Uranus", "to": "Margaret"}, {"from": "Uranus", "to": "Miranda"}, {"from": "Uranus", "to": "Oberon"}, {"from": "Uranus", "to": "Ophelia"}, {"from": "Uranus", "to": "Perdita"}, {"from": "Uranus", "to": "Portia"}, {"from": "Uranus", "to": "Prospero"}, {"from": "Uranus", "to": "Puck"}, {"from": "Uranus", "to": "Rosalind"}, {"from": "Uranus", "to": "Setebos"}, {"from": "Uranus", "to": "Stephano"}, {"from": "Uranus", "to": "Sycorax"}, {"from": "Uranus", "to": "Titania"}, {"from": "Uranus", "to": "Trinculo"}, {"from": "Uranus", "to": "Umbriel"}, {"from": "Neptune", "to": "Despina"}, {"from": "Neptune", "to": "Galatea"}, {"from": "Neptune", "to": "Halimede"}, {"from": "Neptune", "to": "Hippocamp"}, {"from": "Neptune", "to": "Laomedeia"}, {"from": "Neptune", "to": "Larissa"}, {"from": "Neptune", "to": "Naiad"}, {"from": "Neptune", "to": "Nereid"}, {"from": "Neptune", "to": "Neso"}, {"from": "Neptune", "to": "Proteus"}, {"from": "Neptune", "to": "Psamathe"}, {"from": "Neptune", "to": "Sao"}, {"from": "Neptune", "to": "Thalassa"}, {"from": "Neptune", "to": "Triton"}, {"from": "Pluto", "to": "Charon"}, {"from": "Pluto", "to": "Hydra"}, {"from": "Pluto", "to": "Kerberos"}, {"from": "Pluto", "to": "Nix"}, {"from": "Pluto", "to": "Styx"}, {"from": "Eris", "to": "Dysnomia"}, {"from": "Haumea", "to": "Namaka"}, {"from": "Haumea", "to": "Hi\u0027iaka"}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": true,
+        "filter": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+        network.on("stabilizationProgress", function(params) {
+      		document.getElementById('loadingBar').removeAttribute("style");
+	        var maxWidth = 496;
+	        var minWidth = 20;
+	        var widthFactor = params.iterations/params.total;
+	        var width = Math.max(minWidth,maxWidth * widthFactor);
+
+	        document.getElementById('bar').style.width = width + 'px';
+	        document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+	    });
+	    network.once("stabilizationIterationsDone", function() {
+	        document.getElementById('text').innerHTML = '100%';
+	        document.getElementById('bar').style.width = '496px';
+	        document.getElementById('loadingBar').style.opacity = 0;
+	        // really clean the dom element
+	        setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+	    });
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
